@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using ShopAPI.Filters;
 using ShopAPI.Models.Forms;
 using ShopAPI.Services;
 
@@ -7,6 +8,7 @@ namespace ShopAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [UseApiKey]
     public class OrdersController : ControllerBase
     {
         private readonly IOrderService orderService;
@@ -55,7 +57,7 @@ namespace ShopAPI.Controllers
         public async Task<ActionResult> DeleteOrder(int id)
         {
             if (await orderService.DeleteAsync(id) == true)
-                return Ok();
+                return Ok("Successfully deleted your order!");
             return new NotFoundResult();
         }
     }

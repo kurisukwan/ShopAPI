@@ -13,6 +13,7 @@ namespace ShopAPI.Services
         Task<Product> GetAsync(string productName);
         Task<Product> UpdateAsync(int articleNumber, AddProductForm form);
         Task<bool> DeleteAsync(int articleNumber);
+        Task<int> UpdateQuantity(int articleNumber, int changedQuantity);
     }
     public class ProductService : IProductService
     {
@@ -110,5 +111,19 @@ namespace ShopAPI.Services
             return false;
         }
 
+        // UpdateQuantity---------------------------------------------------------------------------
+        public async Task<int> UpdateQuantity(int articleNumber, int changedQuantity)
+        {
+            var productEntity = await context.Products.FindAsync(articleNumber);
+            if (productEntity != null)
+            {
+                productEntity.Quantity -= changedQuantity;
+                context.Entry(productEntity).State = EntityState.Modified;
+                await context.SaveChangesAsync();
+                return productEntity.Quantity;
+            }
+            return 0;
+
+        }
     }
 }

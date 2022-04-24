@@ -9,7 +9,7 @@ namespace ShopAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    //[UseApiKey]
+    [UseApiKey]
     public class UsersController : ControllerBase
     {
         private readonly IUserService userService;
@@ -74,7 +74,7 @@ namespace ShopAPI.Controllers
         public async Task<ActionResult> DeleteById(int id)
         {
             if (await userService.DeleteAsync(id) == true)
-                return Ok();
+                return Ok("Successfully deleted user");
             return new NotFoundResult();
         }
     }
