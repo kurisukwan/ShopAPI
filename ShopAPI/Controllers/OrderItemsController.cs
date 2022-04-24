@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using ShopAPI.Filters;
 using ShopAPI.Models.Forms;
 using ShopAPI.Services;
 
@@ -7,6 +8,7 @@ namespace ShopAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [UseApiKey]
     public class OrderItemsController : ControllerBase
     {
         private readonly IOrderItemService orderItemService;
@@ -37,7 +39,7 @@ namespace ShopAPI.Controllers
         public async Task<ActionResult> DeleteOrderItem(DeleteForm form)
         {
             if (await orderItemService.DeleteItemAsync(form) == true)
-                return Ok("Item was successfully removed form your order!");
+                return Ok("Item(s) was successfully removed form your order!");
             return BadRequest("No such item in your order or wrong order id");
         }
     }

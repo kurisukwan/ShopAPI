@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using ShopAPI.Filters;
 using ShopAPI.Models.Forms;
 using ShopAPI.Services;
 
@@ -7,6 +8,7 @@ namespace ShopAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [UseApiKey]
     public class ProductsController : ControllerBase
     {
         private readonly IProductService productService;

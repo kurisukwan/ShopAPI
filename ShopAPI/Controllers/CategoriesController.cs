@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ShopAPI.Data;
+using ShopAPI.Filters;
 using ShopAPI.Models;
 using ShopAPI.Services;
 
@@ -14,6 +15,7 @@ namespace ShopAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [UseApiKey]
     public class CategoriesController : ControllerBase
     {
         private readonly ICategoryService categoryService;

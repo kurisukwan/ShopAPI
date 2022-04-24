@@ -18,10 +18,12 @@ namespace ShopAPI.Services
     public class OrderItemService : IOrderItemService
     {
         private readonly DataContext context;
+        private readonly IProductService productService;
 
-        public OrderItemService(DataContext context)
+        public OrderItemService(DataContext context, IProductService productService)
         {
             this.context = context;
+            this.productService = productService;
         }
 
         // Create-----------------------------------------------------------------------------------
@@ -39,6 +41,7 @@ namespace ShopAPI.Services
                     Quantity = form.Quantity,
                     ProductId = form.ArticleNumber
                 };
+                await productService.UpdateQuantity(form.ArticleNumber, form.Quantity);
                 context.OrderItems.Add(orderItemEntity);
                 await context.SaveChangesAsync();
                 return new OrderItem(product.ProductName, product.Description, product.Price, orderItemEntity.Quantity);
@@ -72,7 +75,9 @@ namespace ShopAPI.Services
             var orderItem = await context.OrderItems.Include(x => x.Product).FirstOrDefaultAsync(x => (x.OrderId == form.OrderId) && (x.ProductId == form.ArticleNumber));
             if (orderItem != null && orderItem.Product.Quantity - form.Quantity > 0)
             {
+                int reversedChangedProductQty = form.Quantity - orderItem.Quantity;
                 orderItem.Quantity = form.Quantity;
+                await productService.UpdateQuantity(form.ArticleNumber, reversedChangedProductQty);
                 context.Entry(orderItem).State = EntityState.Modified;
                 await context.SaveChangesAsync();
                 return new OrderItem(orderItem.Product.ProductName, orderItem.Product.Description, orderItem.Product.Price, orderItem.Quantity);
@@ -85,6 +90,7 @@ namespace ShopAPI.Services
         {
             foreach (var item in await context.OrderItems.Where(x => x.OrderId == orderId).ToListAsync())
             {
+                await productService.UpdateQuantity(item.ProductId ,-item.Quantity);
                 context.OrderItems.Remove(item);
             }
             await context.SaveChangesAsync();
@@ -96,6 +102,7 @@ namespace ShopAPI.Services
             var orderItem = await context.OrderItems.FirstOrDefaultAsync(x => (x.OrderId == form.OrderId) && ( x.ProductId == form.ArticleNumber));
             if (orderItem != null)
             {
+                await productService.UpdateQuantity(orderItem.ProductId ,-orderItem.Quantity);
                 context.OrderItems.Remove(orderItem);
                 await context.SaveChangesAsync();
                 return true;
